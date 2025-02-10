@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <link rel="stylesheet" href="/css/dummy-login.css">
+    <script src="/js/create-account.js"  type="module" defer></script>
+</head>
+<body>
+
+    <div class="login-container">
+        <form class="login-form">
+            <h2>Create New Account</h2>
+            
+            <!-- Username Field -->
+            <div class="input-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            
+            <!-- Password Field -->
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+
+             <!-- Password Field -->
+             <div class="input-group">
+                <label for="password">Confirm Password</label>
+                <input type="password" id="password2" name="password" required>
+            </div>
+            
+            <!--Error message-->
+            <div id="error-message"></div>
+
+            <!--Success message-->
+            <div id="success-message"></div>
+            
+            <!-- Submit Button -->
+            <button type="button" id="ca-btn" class="login-btn">Create Account</button>
+            
+            <!-- Create Account Link -->
+            <div class="create-account">
+                <a href="/">Log In</a>
+            </div>
+        </form>
+    </div>
+
+</body>
+</html>

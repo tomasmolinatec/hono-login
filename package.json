@@ -1,0 +1,16 @@
+{
+  "name": "hono-login",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch index.js"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.13.8",
+    "@supabase/supabase-js": "^2.48.1",
+    "hono": "^4.6.20"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.17",
+    "tsx": "^4.7.1"
+  }
+}
