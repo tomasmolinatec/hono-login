@@ -43,13 +43,15 @@ app.use('/js/*', serveStatic({
 // Root endpoint
 app.get('/', async (c) => {
   const html = await fs.readFile('public/html/dummy-login.html', 'utf-8');
-  console.log('Loading page');
+  // console.log('Loading page');
   return c.html(html);
 });
 
-// Test endpoint
-app.get('/test', async (c) => {
-  return c.status(200);
+
+app.get('/create-account', async (c) => {
+  // console.log("CALLED");
+  const html = await fs.readFile('public/html/create-account.html', 'utf-8');
+  return c.html(html);
 });
 
 
@@ -58,7 +60,6 @@ app.post('/login', async (c) =>{
   const data = await c.req.json()
   const username =  data["username"]
   const password =  data["password"]
-
 
   let { data: users, error } = await supabase
   .from('users') 
@@ -83,18 +84,6 @@ app.post('/login', async (c) =>{
 })
 
 
-
-app.get('/users', async (c) => {
-  let { data: users, error } = await supabase
-      .from('users') 
-      .select('*');
-
-  if (error) {
-      return c.json({ error: error.message }, 500);
-  }
-  console.log(users);
-  return c.json(users);
-});
 
 app.post('/users',  async (c) => {
 
@@ -135,7 +124,6 @@ app.post('/users',  async (c) => {
 
   return c.json({"status": true})
 });
-
 
 
 
