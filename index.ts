@@ -5,6 +5,8 @@ import { Hono } from 'hono';
 import fs from 'fs/promises';
 import { createClient } from '@supabase/supabase-js';
 import jwt from 'jsonwebtoken'
+import { setCookie, getCookie } from 'hono/cookie';
+
 
 const supabaseUrl = 'https://adfkuealcsynlwiysvvt.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkZmt1ZWFsY3N5bmx3aXlzdnZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzkyMDQ4MjUsImV4cCI6MjA1NDc4MDgyNX0.QN0hJb58rb4y88MZRYmT2E-zpuMoPCNEUmpMlwjrCH0';
@@ -17,18 +19,26 @@ const EXPIRATION = '1h';
 const app = new Hono();
 
 
-function generateToken(payload)
+function generateToken(payload: JSON)
 {
   return jwt.sign(payload, SECRET_KEY, { expiresIn: EXPIRATION });
 };
 
+function verifyToken(token: string){
+  try {
+    const decoded = jwt.verify(token, SECRET_KEY);
+    
+    return { valid: true, decoded };
+  } catch (error) {
+    return { valid: false };
+  }
+};
 
 // Debugging
 app.use('*', async (c, next) => {
   console.log(`Request: ${c.req.method} ${c.req.path}`);
   await next();
 });
-
 
 
 // app.use('/static/*', serveStatic({ root: './public' }));
@@ -52,7 +62,7 @@ app.use('/js/*', serveStatic({
 }));
 
 
-// Root endpoint
+
 app.get('/', async (c) => {
   const html = await fs.readFile('public/html/dummy-login.html', 'utf-8');
   // console.log('Loading page');
@@ -67,7 +77,16 @@ app.get('/create-account', async (c) => {
 });
 
 app.get('/webpage', async (c) => {
+
+  const cookie = getCookie(c, "auth");
+  // console.log(cookie);
   // console.log("CALLED");
+  const {valid, decoded} = verifyToken(cookie);
+
+  if (!valid)
+  {
+    return c.text("Invalid Access");
+  }
   const html = await fs.readFile('public/html/webpage.html', 'utf-8');
   return c.html(html);
 });
@@ -90,16 +109,25 @@ app.post('/login', async (c) =>{
 
   // console.log(users,error)
   
-  if (users.length == 0)
+  if (users && users.length == 0)
   {
     // console.log("Username already exixts.")
     return c.json({"status": false, "message": "Wrong username or password!"})
   }
-  else
-  {
-    // console.log(generateToken({username: username}));
-    return c.json({"status": true, "jwt": generateToken({username: username})})
-  }
+  
+  // console.log(generateToken({username: username}));
+  const token = generateToken({username: username});
+  setCookie(c, "auth", token, {
+    path: '/',
+    // secure: true,
+    httpOnly: true,
+    maxAge: 3600,
+    sameSite: 'Strict',
+  })
+
+
+  return c.json({"status": true,})
+  
 })
 
 
@@ -118,13 +146,13 @@ app.post('/users',  async (c) => {
   .from('users') 
   .select('*')
   .eq('username', username);
-  if (error) {
+  if (error || !users) {
     return c.json({"status": false, "message": "Internal error."}, 500);
   }
 
   // console.log(users,error)
   
-  if (users.length != 0)
+  if (users && users.length != 0)
   {
     // console.log("Username already exixts.")
     return c.json({"status": false, "message": "Username already exixts."})

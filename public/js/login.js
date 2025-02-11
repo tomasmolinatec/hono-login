@@ -37,8 +37,10 @@ loginButton.addEventListener("click", async  (event) => {
     }),
   })
     .catch((error) => {
-      console.error("Error:", error); 
+      showError("Error con el servidor, intenta mas tarde.")
+      return;
     });
+
 
     response = await response.json();
 
@@ -50,7 +52,7 @@ loginButton.addEventListener("click", async  (event) => {
     else
     {
       showSucc("Successfully logged in!");
-      console.log(response.jwt);
+      // console.log(response.jwt);
       localStorage.setItem('jwt', response.jwt);
       window.location.href = url + "webpage";
     }
