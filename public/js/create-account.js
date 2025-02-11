@@ -1,3 +1,5 @@
+"use strict"
+
 async function hashInput(inputString) {
     const encoder = new TextEncoder();
     const data = encoder.encode(inputString);

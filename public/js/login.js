@@ -1,3 +1,5 @@
+"use strict"
+
 async function hashInput(inputString) {
     const encoder = new TextEncoder();
     const data = encoder.encode(inputString);
@@ -48,6 +50,9 @@ loginButton.addEventListener("click", async  (event) => {
     else
     {
       showSucc("Successfully logged in!");
+      console.log(response.jwt);
+      localStorage.setItem('jwt', response.jwt);
+      window.location.href = url + "webpage";
     }
 });
 
